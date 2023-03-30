@@ -1,3 +1,0 @@
-sudo modprobe nbd && sudo nbd-client -N export1 -unix /tmp/unix9 /dev/nbd0
-
-sudo modprobe nbd && sudo nbd-client -N export1 -unix /tmp/unix30 /dev/nbd0
