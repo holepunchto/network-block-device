@@ -1,9 +1,9 @@
 const nbdi = require("./index");
 const fs = require("fs");
 
-const t = new nbdi(4, 5, 1024);
+const t = new nbdi("notAFunction", "notAFunction", 1024);
 
-const mySock = "/tmp/unix9";
+const mySock = "/tmp/unix10";
 
 t.connect(mySock);
 
