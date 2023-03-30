@@ -43,11 +43,7 @@ const fastCutter = function (buffer, arr) {
   const bc = new bufferCutter(buffer);
   const res = [];
   for (n of arr) {
-    if (n === "rest") {
-      res.push(bc.rest());
-    } else {
-      res.push(bc.extract(n));
-    }
+    res.push(n === "rest" ? bc.rest() : bc.extract(n));
   }
   return res;
 };
