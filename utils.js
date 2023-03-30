@@ -1,52 +1,54 @@
 const make16 = function (number) {
-  const res = Buffer.alloc(2);
-  res.writeInt16BE(number);
-  return res;
-};
+  const res = Buffer.alloc(2)
+  res.writeInt16BE(number)
+  return res
+}
 
 const make32 = function (number) {
-  const res = Buffer.alloc(4);
-  res.writeInt32BE(number);
-  return res;
-};
+  const res = Buffer.alloc(4)
+  res.writeInt32BE(number)
+  return res
+}
 
 const make64 = function (number) {
-  const res = Buffer.alloc(8);
-  res.writeBigInt64BE(BigInt(number));
-  return res;
-};
-
-function byte2String(b) {
-  return b.toString(2).padStart(8, "0");
+  const res = Buffer.alloc(8)
+  res.writeBigInt64BE(BigInt(number))
+  return res
 }
 
-function buffer2String(b) {
-  return [...b].map(byte2String).join("");
+function byte2String (b) {
+  return b.toString(2).padStart(8, '0')
 }
 
-const bufferCutter = class {
-  constructor(buffer) {
-    this.buffer = buffer;
-    this.cursor = 0;
+function buffer2String (b) {
+  return [...b].map(byte2String).join('')
+}
+
+const BufferCutter = class {
+  constructor (buffer) {
+    this.buffer = buffer
+    this.cursor = 0
   }
-  extract(upTo) {
-    const res = this.buffer.subarray(this.cursor, this.cursor + upTo);
-    this.cursor = this.cursor + upTo;
-    return res;
+
+  extract (upTo) {
+    const res = this.buffer.subarray(this.cursor, this.cursor + upTo)
+    this.cursor = this.cursor + upTo
+    return res
   }
-  rest() {
-    return this.buffer.subarray(this.cursor);
+
+  rest () {
+    return this.buffer.subarray(this.cursor)
   }
-};
+}
 
 const fastCutter = function (buffer, arr) {
-  const bc = new bufferCutter(buffer);
-  const res = [];
-  for (n of arr) {
-    res.push(n === "rest" ? bc.rest() : bc.extract(n));
+  const bc = new BufferCutter(buffer)
+  const res = []
+  for (const n of arr) {
+    res.push(n === 'rest' ? bc.rest() : bc.extract(n))
   }
-  return res;
-};
+  return res
+}
 
 module.exports = {
   make16,
@@ -54,6 +56,6 @@ module.exports = {
   make64,
   byte2String,
   buffer2String,
-  bufferCutter,
-  fastCutter,
-};
+  BufferCutter,
+  fastCutter
+}

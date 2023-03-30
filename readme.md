@@ -11,7 +11,7 @@ First of all, you need to install the nbd package, I compiled the version from s
 Then, download the nbd-server package, open it in a terminal, and run
 
 ```bash
-sudo node app
+node app
 ```
 
 to start the server. By default the app provides a 1024kb export.
@@ -21,7 +21,7 @@ to start the server. By default the app provides a 1024kb export.
 Then, open a second terminal and run this command on the folder:
 
 ```bash
-sudo node cepter
+node cepter
 ```
 
 This will start a script that intercepts the server communication, formats it and prints it.
