@@ -1,3 +1,9 @@
+# Table of Content
+
+- [Logs](#logs)
+- [Baseline implementation checklist](#baseline-implementation-checklist)
+- [Example](#example)
+
 # Logs
 
 You can find parsed logs [here](parsed_logs.md)
