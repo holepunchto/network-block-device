@@ -1,4 +1,41 @@
-The package has no js dependencies so no need to npm install.
+# Table of Content
+
+- [Logs](#logs)
+- [Baseline implementation checklist](#baseline-implementation-checklist)
+- [Example](#example)
+
+# Logs
+
+You can find parsed logs [here](parsed_logs.md)
+
+# Baseline implementation checklist
+
+**Negotiation phase**
+
+ 1) Starter message from the server ✅
+ 
+ 2) Parsing client flags correctly ❌ 
+ 
+ 3) Parsing NBD_OPT_GO, to reply with a NBD_REP_INFO of type NBD_INFO_EXPORT, and NBD_REP_ACK, before starting the transmission phase ❓
+ 
+ 4) Parsing NBD_OPT_INFO (the same as NBD_OPT_GO, but without starting the transmission phase) ❓
+ 
+ 5) Parsing NBD_OPT_LIST, to reply with an NBD_REP_SERVER for each export offered by the server, and NBD_REP_ACK ❌ 
+ 
+ 6) Parsing NBD_OPT_ABORT, to reply with NBD_REP_ACK before shutting down ❌ 
+ 
+ 7) Reply to any other option with NBD_REP_ERR_UNSUP ❌ 
+
+**Transmission phase** 
+
+ 8) Parsing CMD_READ and reply ❓
+ 
+ 9) Parsing CMD_WRITE and reply ❓
+ 
+ 10) Parsing CMD_DISC and disconnect ❌ 
+ 
+
+# Example
 
 I only tried it with the main Linux implementation of the protocol.
 
