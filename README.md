@@ -9,7 +9,7 @@ npm install tiny-nbd-server
 ## Usage
 
 ```js
-const NBDServer = require('nbd-server')
+const NBDServer = require('tiny-nbd-server')
 
 const blocks = new Map()
 
