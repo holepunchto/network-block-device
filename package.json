@@ -1,5 +1,5 @@
 {
-  "name": "nbd-server",
+  "name": "tiny-nbd-server",
   "version": "0.0.0",
   "description": "NBD server",
   "main": "index.js",
@@ -8,18 +8,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/holepunchto/nbd-server.git"
+    "url": "git+https://github.com/holepunchto/tiny-nbd-server.git"
   },
-  "author": "",
+  "author": "Holepunch Inc",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/holepunchto/nbd-server/issues"
+    "url": "https://github.com/holepunchto/tiny-nbd-server/issues"
   },
-  "homepage": "https://github.com/holepunchto/nbd-server#readme",
+  "homepage": "https://github.com/holepunchto/tiny-nbd-server#readme",
   "devDependencies": {
     "standard": "^17.0.0"
-  },
-  "dependencies": {
-    "fast-fifo": "^1.1.0"
   }
 }
