@@ -34,7 +34,7 @@ const server = new NBDServer({
 })
 
 try {
-  fs.unlinkSync('/tmp/ndb')
+  fs.unlinkSync('/tmp/nbd')
 } catch {}
 server.listen('/tmp/nbd')
 
