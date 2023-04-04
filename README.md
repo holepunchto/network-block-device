@@ -34,10 +34,60 @@ const server = new NBDServer({
 server.listen('/tmp/nbd')
 ```
 
-And then mount the block device with `nbd-client`, with something like
+# Example
 
+Warning: the example has a default blocksize of 1024. If the client you're using has a different blocksize, you will need to change it on one side or the other in order for them to match, otherwise you'll have unexpected behavior.
+
+**1. Installation**
+
+First of all, you need to install the nbd package, I compiled the version from sourceforge: https://sourceforge.net/projects/nbd/files/
+
+**2. Server terminal**
+
+Then, download the nbd-tiny-server package, open it in a terminal, and run
+
+```bash
+node example
 ```
-sudo nbd-client -N export1 -unix /tmp/nbd /dev/nbd0
+
+to start the server. By default the app provides a 16GB export.
+
+**3. Client terminal**
+
+Open another terminal anywhere, and run 
+
+```bash
+sudo modprobe nbd && sudo nbd-client -N export1 -unix /tmp/nbd /dev/nbd5
+```
+the client terminal should log something like
+
+```bash
+Negotiation: ..size = 16384MB
+bs=512, sz=17179869184 bytes
+```
+This means the handshake phase was successful.
+
+**4. Making a file system**
+
+You can make a file system on the device by running
+
+```bash
+sudo mkfs.ext4 /dev/nbd5
+```
+
+**5. Mounting and unmounting the device**
+
+You can now mount the device with
+
+```bash
+sudo mount /dev/nbd5 /mnt
+```
+You can cd into the device and work on it like it was a regular hard drive. 
+
+Remember to unmount it before stopping the server, using
+
+```bash
+sudo umount /mnt
 ```
 
 ## Dependencies
