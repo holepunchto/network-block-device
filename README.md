@@ -49,7 +49,7 @@ npm install -g network-block-device
 
 **2. Server terminal**
 
-Open the `network-block-device` package in a terminal, and run
+Open the `network-block-device` folder in a terminal, and run
 
 ```bash
 node example
