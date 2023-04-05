@@ -6,7 +6,7 @@ NBD server implemention in JS focused around providing an API for implementing v
 npm install -g network-block-device
 ```
 
-The package contains a simple CLI script `nbdc.js` to connect the Linuc client to the server
+The package contains a simple CLI script `nbdc.js` to connect the Linux client to the server
 
 After a global installation, you can call it with
 
