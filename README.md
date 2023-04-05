@@ -6,14 +6,6 @@ NBD server implemention in JS focused around providing an API for implementing v
 npm install -g network-block-device
 ```
 
-The package contains a simple CLI script `nbdc.js` to connect the Linux client to the server
-
-After a global installation, you can call it with
-
-```bash
-nbdc <unix-socket> <nbd-device>
-```
-
 ## Usage
 
 ```js
@@ -44,15 +36,20 @@ server.listen('/tmp/nbd')
 
 # Example
 
-Warning: the example has a default blocksize of 1024. If the client you're using has a different blocksize, you will need to change it on one side or the other in order for them to match, otherwise you'll have unexpected behavior.
-
 **1. Installation**
 
 First of all, you need to install the nbd package, I compiled the version from sourceforge: https://sourceforge.net/projects/nbd/files/
+But you can find packages for various distros at https://repology.org/project/nbd/versions
+
+The `network-block-device` package contains a simple CLI script `nbdc.js` to connect the Linux client to the server, so install it globally
+
+```
+npm install -g network-block-device
+```
 
 **2. Server terminal**
 
-Then, download the `network-block-device` package, open it in a terminal, and run
+Open the `network-block-device` package in a terminal, and run
 
 ```bash
 node example
