@@ -3,7 +3,15 @@
 NBD server implemention in JS focused around providing an API for implementing virtual block devices
 
 ```
-npm install tiny-nbd-server
+npm install -g tiny-nbd-server
+```
+
+The package contains a simple CLI script `nbdc.js` to connect the Linuc client to the server
+
+After a global installation, you can call it with
+
+```bash
+nbdc <unix-socket> <nbd-device>
 ```
 
 ## Usage
@@ -57,12 +65,11 @@ to start the server. By default the app provides a 16GB export.
 Open another terminal anywhere, and run 
 
 ```bash
-sudo modprobe nbd && sudo nbd-client -N export1 -unix /tmp/nbd /dev/nbd5
+nbdc /tmp/nbd /dev/nbd5
 ```
 the client terminal should log something like
 
 ```bash
-Negotiation: ..size = 16384MB
 bs=512, sz=17179869184 bytes
 ```
 This means the handshake phase was successful.
