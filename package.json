@@ -1,21 +1,21 @@
 {
-  "name": "tiny-nbd-server",
+  "name": "network-block-device",
   "version": "0.0.0",
-  "description": "NBD server",
+  "description": "Network block device server for JavaScript",
   "main": "index.js",
   "scripts": {
     "test": "standard"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/holepunchto/tiny-nbd-server.git"
+    "url": "git+https://github.com/holepunchto/network-block-device.git"
   },
   "author": "Holepunch Inc",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/holepunchto/tiny-nbd-server/issues"
+    "url": "https://github.com/holepunchto/network-block-device/issues"
   },
-  "homepage": "https://github.com/holepunchto/tiny-nbd-server#readme",
+  "homepage": "https://github.com/holepunchto/network-block-device#readme",
   "devDependencies": {
     "standard": "^17.0.0"
   },

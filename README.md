@@ -1,9 +1,9 @@
-# tiny-nbd-server
+# network-block-device
 
 NBD server implemention in JS focused around providing an API for implementing virtual block devices
 
 ```
-npm install -g tiny-nbd-server
+npm install -g network-block-device
 ```
 
 The package contains a simple CLI script `nbdc.js` to connect the Linuc client to the server
@@ -17,7 +17,7 @@ nbdc <unix-socket> <nbd-device>
 ## Usage
 
 ```js
-const NBDServer = require('tiny-nbd-server')
+const NBDServer = require('network-block-device')
 
 const blocks = new Map()
 
@@ -52,7 +52,7 @@ First of all, you need to install the nbd package, I compiled the version from s
 
 **2. Server terminal**
 
-Then, download the nbd-tiny-server package, open it in a terminal, and run
+Then, download the `network-block-device` package, open it in a terminal, and run
 
 ```bash
 node example
