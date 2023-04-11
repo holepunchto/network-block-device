@@ -1,6 +1,6 @@
 {
   "name": "network-block-device",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Network block device server for JavaScript",
   "main": "index.js",
   "scripts": {
@@ -20,6 +20,6 @@
     "standard": "^17.0.0"
   },
   "bin": {
-    "nbdc" : "nbdc.js"
+    "nbdc": "nbdc.js"
   }
 }
