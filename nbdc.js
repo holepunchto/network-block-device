@@ -2,7 +2,11 @@
 
 const { spawnSync } = require('child_process')
 
-spawnSync('sudo', ['modprobe', 'nbd'], { stdio: 'inherit' })
+const modprobe = spawnSync('sudo', ['modprobe', 'nbd'], { stdio: 'inherit' })
+
+if (modprobe.status === 1) {
+  process.exit(1)
+}
 
 const disconnect = spawnSync('sudo', ['nbd-client', '-d', process.argv[3]], { stdio: 'inherit' })
 
