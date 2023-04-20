@@ -2,7 +2,7 @@
 
 NBD server implemention in JS focused around providing an API for implementing virtual block devices
 
-The examples use our client CLI:
+The examples use our [client CLI](https://github.com/holepunchto/nbdc):
 
 ```
 npm install -g nbdc
