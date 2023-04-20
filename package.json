@@ -18,8 +18,5 @@
   "homepage": "https://github.com/holepunchto/network-block-device#readme",
   "devDependencies": {
     "standard": "^17.0.0"
-  },
-  "bin": {
-    "nbdc": "nbdc.js"
   }
 }
