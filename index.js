@@ -1,6 +1,14 @@
 const constants = require('./constants')
 const net = require('net')
 
+const fs = require('fs')
+const logStream = fs.createWriteStream('./logReads.txt', { flags: 'a' })
+function fileLog (...messages) {
+  logStream.write(messages.join(' ') + '\n')
+}
+let counter = 1
+let permCounter = 0
+
 const HANDSHAKE = 0
 const OPTIONS_START = 1
 const OPTIONS_END = 2
@@ -9,6 +17,7 @@ const REQUEST_END = 4
 
 const DEFAULT_BLOCK_SIZE = 1024
 const DEFAULT_EMPTY_BLOCK = Buffer.alloc(DEFAULT_BLOCK_SIZE)
+
 
 module.exports = class NBDServer {
   constructor (handlers) {
@@ -234,6 +243,8 @@ class NBDProtocol {
   }
 
   _onread (req) {
+    counter++
+    permCounter++
     const offset = req.offset / this.blockSize
     const all = []
 
@@ -263,6 +274,9 @@ class NBDProtocol {
     }
 
     this.stream.write(buf)
+    counter--
+    fileLog('read #', permCounter,
+      "number of concurrent reads =", counter)
   }
 
   _onwrite (req) {
@@ -320,3 +334,4 @@ function noop () {}
 function noopPromise (p) {
   if (p && p.then) p.then(noop, noop)
 }
+
