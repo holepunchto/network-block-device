@@ -2,8 +2,10 @@
 
 NBD server implemention in JS focused around providing an API for implementing virtual block devices
 
+The examples use our [client CLI](https://github.com/holepunchto/nbdc):
+
 ```
-npm install -g network-block-device
+npm install -g nbdc
 ```
 
 ## Usage
@@ -93,7 +95,3 @@ Remember to unmount it before stopping the server, using
 ```bash
 sudo umount /mnt
 ```
-
-## Dependencies
-
-TODO
