@@ -3,14 +3,6 @@ const NBDServer = require('..')
 const sh = require('shellblazer')
 const fs = require('fs')
 
-async function setup () {
-  await sh(['sudo', 'apt', 'update'],
-    ['sudo', 'apt', 'install', 'nbd'],
-    ['sudo', 'modprobe', 'nbd'])
-}
-
-setup()
-
 function nbdTemplate (socket) {
   const blocks = new Map()
 

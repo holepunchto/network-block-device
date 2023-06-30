@@ -21,4 +21,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm install
+    - run: sudo apt update
+    - run: sudo apt install nbd
+    - run: sudo modprobe nbd
     - run: npm test
