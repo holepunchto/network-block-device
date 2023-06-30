@@ -56,7 +56,7 @@ test('hello world', async function (t) {
     await nbd.connections.forEach(async c => await c.destroy())
     console.log('connections are:')
     console.log(nbd.server.connections)
-    await sh(['sudo', 'umount', MOUNTPOINT])
+    await sh(['sudo', 'umount', device])
     console.log('reached the end')
   })
 })
