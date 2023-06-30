@@ -24,6 +24,7 @@ function nbdTemplate (socket) {
     fs.unlinkSync(socket)
   } catch {}
   server.listen(socket)
+  return server
 }
 
 test('hello world', async function (t) {
@@ -33,7 +34,7 @@ test('hello world', async function (t) {
 
   fs.mkdirSync(MOUNTPOINT, { recursive: true })
 
-  nbdTemplate(socket)
+  const server = nbdTemplate(socket)
 
   await sh(
     ['sudo', 'nbd-client', '-d', device],
@@ -49,4 +50,8 @@ test('hello world', async function (t) {
   fs.writeFileSync(`${MOUNTPOINT}/file.txt`, 'hello, world!')
   const data = fs.readFileSync(`${MOUNTPOINT}/file.txt`, { encoding: 'utf8', flag: 'r' })
   t.is(data, 'hello, world!')
+
+  server.connections.forEach(c => c.destroy())
+  await sh(['sudo', 'umount', MOUNTPOINT])
+  fs.promises.unlink(socket)
 })
