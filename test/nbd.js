@@ -54,6 +54,9 @@ test('hello world', async function (t) {
   t.teardown(async function () {
     await nbd.server.close()
     await nbd.connections.forEach(async c => await c.destroy())
+    console.log('connections are:')
+    console.log(nbd.server.connections)
     await sh(['sudo', 'umount', MOUNTPOINT])
+    console.log('reached the end')
   })
 })
