@@ -24,4 +24,4 @@ jobs:
     - run: sudo apt update
     - run: sudo apt-get install nbd-server nbd-client
     - run: sudo modprobe nbd
-    - run: npm test
+    - run: sudo npm test
