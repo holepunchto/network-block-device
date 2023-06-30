@@ -52,9 +52,9 @@ test('hello world', async function (t) {
   t.is(data, 'hello, world!')
 
   t.teardown(async function () {
-    nbd.server.close()
-    nbd.connections.forEach(c => c.destroy())
+    await nbd.server.close()
+    await nbd.connections.forEach(c => c.destroy())
     await sh(['sudo', 'umount', MOUNTPOINT])
-    fs.promises.unlink(socket)
+    await fs.promises.unlink(socket)
   })
 })
