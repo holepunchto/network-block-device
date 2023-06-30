@@ -2,6 +2,7 @@ const test = require('brittle')
 const NBDServer = require('..')
 const sh = require('shellblazer')
 const fs = require('fs')
+const { exec } = require('child_process')
 
 function nbdTemplate (socket) {
   const blocks = new Map()
@@ -57,7 +58,18 @@ test('hello world', async function (t) {
     await nbd.connections.forEach(async c => await c.destroy())
     console.log('connections are:')
     console.log(nbd.server.connections)
-    await sh(['sudo', 'umount', device])
+    exec(`sudo umount ${device}`, (error, stdout, stderr) => {
+      if (error) {
+        console.log(`error: ${error.message}`)
+        return
+      }
+      if (stderr) {
+        console.log(`stderr: ${stderr}`)
+        return
+      }
+      console.log(`stdout: ${stdout}`)
+    })
+    // await sh(['sudo', 'umount', device])
     console.log('reached the end')
   })
 })
