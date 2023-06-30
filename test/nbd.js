@@ -44,12 +44,13 @@ test('hello world', async function (t) {
 
   const sh1 = sh.configure({ cwd: MOUNTPOINT })
   await sh1(
-    ['sudo', 'touch', 'file.txt']
+    ['sudo', 'touch', 'file.txt'],
+    ['sudo', 'chmod', 'a+wrx', 'file.txt']
   )
 
-  // fs.writeFileSync(`${MOUNTPOINT}/file.txt`, 'hello, world!')
-  // const data = fs.readFileSync(`${MOUNTPOINT}/file.txt`, { encoding: 'utf8', flag: 'r' })
-  // t.is(data, 'hello, world!')
+  fs.writeFileSync(`${MOUNTPOINT}/file.txt`, 'hello, world!')
+  const data = fs.readFileSync(`${MOUNTPOINT}/file.txt`, { encoding: 'utf8', flag: 'r' })
+  t.is(data, 'hello, world!')
 
   t.teardown(async function () {
     await nbd.server.close()
