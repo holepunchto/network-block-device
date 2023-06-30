@@ -22,7 +22,7 @@ function nbdTemplate (socket) {
 
   try {
     fs.unlinkSync(socket)
-  } catch {}
+  } catch (err) {}
   server.listen(socket)
   return server
 }
@@ -55,6 +55,5 @@ test('hello world', async function (t) {
     await nbd.server.close()
     await nbd.connections.forEach(c => c.destroy())
     await sh(['sudo', 'umount', MOUNTPOINT])
-    await fs.promises.unlink(socket)
   })
 })
