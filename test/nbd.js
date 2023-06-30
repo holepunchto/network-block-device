@@ -34,7 +34,7 @@ test('hello world', async function (t) {
 
   fs.mkdirSync(MOUNTPOINT, { recursive: true })
 
-  const server = nbdTemplate(socket)
+  const nbd = nbdTemplate(socket)
 
   await sh(
     ['sudo', 'nbd-client', '-d', device],
@@ -51,7 +51,10 @@ test('hello world', async function (t) {
   const data = fs.readFileSync(`${MOUNTPOINT}/file.txt`, { encoding: 'utf8', flag: 'r' })
   t.is(data, 'hello, world!')
 
-  server.connections.forEach(c => c.destroy())
-  await sh(['sudo', 'umount', MOUNTPOINT])
-  fs.promises.unlink(socket)
+  t.teardown(async function () {
+    nbd.server.close()
+    nbd.connections.forEach(c => c.destroy())
+    await sh(['sudo', 'umount', MOUNTPOINT])
+    fs.promises.unlink(socket)
+  })
 })
