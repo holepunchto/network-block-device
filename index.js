@@ -21,6 +21,17 @@ module.exports = class NBDServer {
     })
   }
 
+  async close () {
+    const all = [...this.connections].map(c => {
+      return new Promise(resolve => {
+        c.destroy()
+        c.stream.on('close', resolve)
+      })
+    })
+    this.server.close()
+    await Promise.all(all)
+  }
+
   listen (...addr) {
     this.server.listen(...addr)
   }
