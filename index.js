@@ -28,7 +28,9 @@ module.exports = class NBDServer {
         c.stream.on('close', resolve)
       })
     })
-    this.server.close()
+    all.push(new Promise(resolve => {
+      this.stream.close(resolve)
+    }))
     await Promise.all(all)
   }
 
