@@ -2,7 +2,6 @@ const test = require('brittle')
 const NBDServer = require('..')
 const sh = require('shellblazer')
 const fs = require('fs')
-// const { exec } = require('child_process')
 
 function nbdTemplate (socket) {
   const blocks = new Map()
