@@ -31,10 +31,10 @@ module.exports = class NBDServer {
 
   async close () {
     this.closed = true
+    this.pipes.forEach(p => fs.unlink(p, e => console.log(e)))
     const all = [...this.connections].map(c => c.destroy())
     all.push(new Promise(resolve => {
       this.server.close(resolve)
-      this.pipes.forEach(p => fs.unlink(p, e => noop(e)))
     }))
     await Promise.all(all)
   }
