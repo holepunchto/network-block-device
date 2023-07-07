@@ -12,8 +12,13 @@ const DEFAULT_EMPTY_BLOCK = Buffer.alloc(DEFAULT_BLOCK_SIZE)
 
 module.exports = class NBDServer {
   constructor (handlers) {
+    this.closed = false
     this.connections = new Set()
     this.server = net.createServer((conn) => {
+      if (this.closed) {
+        conn.destroy()
+        return
+      }
       const p = new NBDProtocol(conn, handlers)
       this.connections.add(p)
       if (handlers.open) noopPromise(handlers.open(p))
@@ -22,6 +27,7 @@ module.exports = class NBDServer {
   }
 
   async close () {
+    this.closed = true
     const all = [...this.connections].map(c => c.destroy())
     all.push(new Promise(resolve => {
       this.server.close(resolve)
