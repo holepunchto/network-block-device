@@ -39,10 +39,10 @@ module.exports = class NBDServer {
     await Promise.all(all)
   }
 
-  listen (...addr) {
-    this.server.listen(...addr)
-    if (typeof addr[0] !== 'number') {
-      this.pipe = addr[0]
+  listen (pipe, ...addr) {
+    this.server.listen(pipe, ...addr)
+    if (typeof pipe !== 'number') {
+      this.pipe = pipe
     }
   }
 
