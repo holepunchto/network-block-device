@@ -31,7 +31,9 @@ module.exports = class NBDServer {
 
   async close () {
     this.closed = true
-    this.pipes.forEach(p => fs.unlink(p, e => console.log(e)))
+    for (const p of this.pipes) {
+      await fs.promises.unlink(p)
+    }
     const all = [...this.connections].map(c => c.destroy())
     all.push(new Promise(resolve => {
       this.server.close(resolve)
@@ -41,7 +43,7 @@ module.exports = class NBDServer {
 
   listen (...addr) {
     this.server.listen(...addr)
-    this.pipes.concat(addr.filter(a => typeof addr !== 'number'))
+    this.pipes = this.pipes.concat(addr.filter(a => typeof a !== 'number'))
   }
 
   static createServer (handlers) {

@@ -54,8 +54,6 @@ test('hello world', async function (t) {
 
   t.teardown(async function () {
     await nbd.close()
-    await fs.promises.unlink(socket)
-
     await sh(['sudo', 'umount', device])
   })
 })
