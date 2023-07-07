@@ -13,7 +13,7 @@ const DEFAULT_EMPTY_BLOCK = Buffer.alloc(DEFAULT_BLOCK_SIZE)
 
 module.exports = class NBDServer {
   constructor (handlers) {
-    this.pipes = []
+    this.pipe = null
     this.closed = false
     this.connections = new Set()
     this.server = net.createServer((conn) => {
@@ -31,9 +31,7 @@ module.exports = class NBDServer {
 
   async close () {
     this.closed = true
-    for (const p of this.pipes) {
-      await fs.promises.unlink(p)
-    }
+    await fs.promises.unlink(this.pipe)
     const all = [...this.connections].map(c => c.destroy())
     all.push(new Promise(resolve => {
       this.server.close(resolve)
@@ -43,7 +41,9 @@ module.exports = class NBDServer {
 
   listen (...addr) {
     this.server.listen(...addr)
-    this.pipes = this.pipes.concat(addr.filter(a => typeof a !== 'number'))
+    if (typeof addr[0] !== 'number') {
+      this.pipe = addr[0]
+    }
   }
 
   static createServer (handlers) {
