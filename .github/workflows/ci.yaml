@@ -2,10 +2,10 @@ name: Build Status
 on:
   push:
     branches:
-      - tests
+      - main
   pull_request:
     branches:
-      - tests
+      - main
 jobs:
   build:
     strategy:
