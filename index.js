@@ -1,5 +1,6 @@
 const constants = require('./constants')
 const net = require('net')
+const fs = require('fs')
 
 const HANDSHAKE = 0
 const OPTIONS_START = 1
@@ -12,6 +13,7 @@ const DEFAULT_EMPTY_BLOCK = Buffer.alloc(DEFAULT_BLOCK_SIZE)
 
 module.exports = class NBDServer {
   constructor (handlers) {
+    this.pipes = []
     this.closed = false
     this.connections = new Set()
     this.server = net.createServer((conn) => {
@@ -32,12 +34,14 @@ module.exports = class NBDServer {
     const all = [...this.connections].map(c => c.destroy())
     all.push(new Promise(resolve => {
       this.server.close(resolve)
+      this.pipes.forEach(p => fs.unlink(p, e => noop(e)))
     }))
     await Promise.all(all)
   }
 
   listen (...addr) {
     this.server.listen(...addr)
+    this.pipes.concat(addr.filter(a => typeof addr !== 'number'))
   }
 
   static createServer (handlers) {
