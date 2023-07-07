@@ -16,6 +16,7 @@ module.exports = class NBDServer {
     this.connections = new Set()
     this.server = net.createServer((conn) => {
       if (this.closed) {
+        conn.on('error', noop)
         conn.destroy()
         return
       }
