@@ -40,7 +40,7 @@ class NBDProtocol {
   constructor (stream, handlers, verbose) {
 
     this.verbose = verbose
-    this.logStream = fs.createWriteStream(`./hbdLogs_${id}.txt`, { flags: 'a' })
+    this.logStream = fs.createWriteStream(`./hbdLogs_${Math.random().toString(16).slice(2)}.txt`, { flags: 'a' })
 
     this.stream = stream
     this.blockSize = handlers.blockSize || DEFAULT_BLOCK_SIZE
@@ -428,16 +428,6 @@ function noop () {}
 function noopPromise (p) {
   if (p && p.then) p.then(noop, noop)
 }
-
-
-
-
-
-
-const id = Math.random().toString(16).slice(2)
-
-
-
 
 function toBinaryString (buf) {
   let result = []
