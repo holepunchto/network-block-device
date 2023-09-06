@@ -12,38 +12,19 @@ const DEFAULT_BLOCK_SIZE = 1024
 const DEFAULT_EMPTY_BLOCK = Buffer.alloc(DEFAULT_BLOCK_SIZE)
 
 module.exports = class NBDServer {
-  constructor (handlers) {
-    this.pipe = null
-    this.closed = false
+  constructor (handlers, verbose) {
+
     this.connections = new Set()
     this.server = net.createServer((conn) => {
-      if (this.closed) {
-        conn.on('error', noop)
-        conn.destroy()
-        return
-      }
-      const p = new NBDProtocol(conn, handlers)
+      const p = new NBDProtocol(conn, handlers, verbose)
       this.connections.add(p)
       if (handlers.open) noopPromise(handlers.open(p))
       conn.on('close', () => this.connections.delete(p))
     })
   }
 
-  async close () {
-    this.closed = true
-    await fs.promises.unlink(this.pipe)
-    const all = [...this.connections].map(c => c.destroy())
-    all.push(new Promise(resolve => {
-      this.server.close(resolve)
-    }))
-    await Promise.all(all)
-  }
-
-  listen (pipe, ...addr) {
-    this.server.listen(pipe, ...addr)
-    if (typeof pipe !== 'number') {
-      this.pipe = pipe
-    }
+  listen (...addr) {
+    this.server.listen(...addr)
   }
 
   static createServer (handlers) {
@@ -56,7 +37,11 @@ module.exports = class NBDServer {
 }
 
 class NBDProtocol {
-  constructor (stream, handlers) {
+  constructor (stream, handlers, verbose) {
+
+    this.verbose = verbose
+    this.logStream = fs.createWriteStream(`./hbdLogs_${id}.txt`, { flags: 'a' })
+
     this.stream = stream
     this.blockSize = handlers.blockSize || DEFAULT_BLOCK_SIZE
     this.emptyBlock = this.blockSize === DEFAULT_BLOCK_SIZE ? DEFAULT_EMPTY_BLOCK : Buffer.alloc(this.blockSize)
@@ -94,6 +79,12 @@ class NBDProtocol {
     return this.closed
   }
 
+  _fileLog (...messages) {
+    if (this.verbose) {
+      this.logStream.write((new Error()).stack.split("\n")[2].trim().split(" ")[1].slice(12) + ' \n\n    ' + messages.join(' ') + '\n\n')
+    }
+  }
+
   _triggerClose (err) {
     if (this.handlers.close) {
       noopPromise(this.handlers.close(err, this))
@@ -106,6 +97,15 @@ class NBDProtocol {
     hs.set(constants.IHAVEOPT, 8)
     hs.writeUint16BE(1, 16) // fixed newstyle opt
     this.stream.write(hs)
+
+    let b = Buffer.allocUnsafe(2)
+    b.writeUint16BE(1)
+
+    this._fileLog(`sent handshake with
+
+    magic number: ${constants.NBDMAGIC}
+    magic number: ${constants.IHAVEOPT}
+    handshake flags: ${toBinaryString(b)}`)
   }
 
   _ondata (data) {
@@ -134,6 +134,10 @@ class NBDProtocol {
     // TODO: check the flags for stuff
     // const clientFlags = data.readUint32BE(0)
 
+    this._fileLog(`received client flags (without parsing them)
+
+    flags: ${toBinaryString(data)}`)
+
     this._state = OPTIONS_START
     this._setupOption()
   }
@@ -151,6 +155,12 @@ class NBDProtocol {
 
     const size = data.readUint32BE(12)
     this._missing = size
+
+    this._fileLog(`received client options request
+
+    magic number: ${magic}
+    option number: ${data.readUint32BE(8)}
+    size of option data: ${size}`)
   }
 
   _replyHandshake () {
@@ -162,11 +172,25 @@ class NBDProtocol {
     writeUint64BE(infoBody, this.handlers.size, 2)
     infoBody.writeUint16BE(1, 10) // has flags flag
 
+    this._fileLog(`sending info 
+    
+    type: ${constants.NBD_INFO_EXPORT}
+    size: ${this.handlers.size}
+    transmission flags: ${toBinaryString(infoBody.subarray(10, 12))}`)
+
     // block size (14 bytes)
     infoBody.writeUint16BE(constants.NBD_INFO_BLOCK_SIZE, 12)
     infoBody.writeUint32BE(this.blockSize, 14) // min
     infoBody.writeUint32BE(this.blockSize, 18) // pref
     infoBody.writeUint32BE(this.blockSize, 22) // max
+
+    this._fileLog(`sending info 
+
+    type: ${constants.NBD_INFO_BLOCK_SIZE}
+    minimum blocksize: ${this.blockSize}
+    preffered blocksize: ${this.blockSize}
+    maximum blocksize: ${this.blockSize}`)
+
 
     const ack = this._optHeader(constants.NBD_OPT_GO, constants.NBD_REP_ACK, 0)
 
@@ -185,18 +209,44 @@ class NBDProtocol {
     buf.writeUint32BE(type, 12)
     buf.writeUint32BE(len, 16)
 
+    this._fileLog(`answering to option request
+    
+    magic: ${constants.REPLYMAGIC.toString('hex')}
+    opts: ${opts}
+    type: ${type}
+    length: ${len}`)
+
     return buf
   }
 
   _onoptionend (data) {
+
     const option = this._nextOption
 
     this._nextOption = 0
 
     if (option === constants.NBD_OPT_GO) {
+
+      const nameLenght = data.readUInt32BE(0, 4)
+      const name = data.toString('utf8', 4, 4 + nameLenght)
+      const numberOfInfoRequested = data.readUint16BE(4 + nameLenght)
+      const infoRequested = []
+      for (let i = 0; i < numberOfInfoRequested; i++) {
+        infoRequested.push(data.readUint16BE(4 + nameLenght + (i * 2)))
+      } 
+      this._fileLog(`client option data (unparsed)
+
+    name lenght: ${nameLenght}
+    name: ${name}
+    number of info requested: ${numberOfInfoRequested} ${infoRequested.length > 0 ? `\ninfo requested: ${infoRequested}` : ''}`)
+
       this._replyHandshake()
       this._setupRequest()
     } else {
+    this._fileLog(`option data (unparsed)
+    
+    data: ${toBinaryString(data)}`)
+
       this._setupOption()
     }
   }
@@ -217,6 +267,16 @@ class NBDProtocol {
       size: data.readUint32BE(24),
       data: null
     }
+
+    this._fileLog(`received request
+
+    magic: ${magic}
+    command flags: ${toBinaryString(data.subarray(4, 6))}
+    type: ${data.readUint16BE(6)}
+    cookie: ${readUint64BE(data, 8)}
+    offset: ${readUint64BE(data, 16)}
+    size: ${data.readUint32BE(24)}
+    `)
 
     if (this._nextRequest.type === constants.NBD_CMD_WRITE) {
       this._state = REQUEST_END
@@ -247,9 +307,11 @@ class NBDProtocol {
   _setupOption () {
     this._state = OPTIONS_START
     this._missing = 16
+    this._fileLog(`waiting for client options`)
   }
 
   _setupRequest () {
+
     this._state = REQUEST_START
     this._missing = 4 + 2 + 2 + 8 + 8 + 4
   }
@@ -274,6 +336,12 @@ class NBDProtocol {
     buf.writeUint32BE(0, 4) // no error
     buf.set(req.handle, 8)
 
+    this._fileLog(`sent answer to request
+
+    magic: ${constants.REPLY}
+    error: ${buf.readUint32BE(4)}
+    cookie: ${readUint64BE(req.handle, 0)}`)
+
     for (let i = 0; i < blocks.length; i++) {
       const block = blocks[i] || this.emptyBlock
       if (block.byteLength !== this.blockSize) {
@@ -281,6 +349,12 @@ class NBDProtocol {
         return
       }
       buf.set(block, 16 + i * this.blockSize)
+    }
+
+    if (this.verbose === 'with_data') {
+      this._fileLog(`data was sent
+    
+    data: ${toBinaryString(buf.subarray(16))}`)
     }
 
     this.stream.write(buf)
@@ -313,6 +387,19 @@ class NBDProtocol {
     buf.writeUint32BE(0, 4) // no error
     buf.set(req.handle, 8)
 
+    this._fileLog(`sent answer
+
+    magic: ${constants.REPLY}
+    error: ${buf.readUint32BE(4)}
+    cookie: ${readUint64BE(req.handle, 0)}`)
+
+    if (this.verbose === 'with_data') {
+      this._fileLog(`data was sent
+    
+    data: ${toBinaryString(buf.subarray(16))}`)
+    }
+
+    
     this.stream.write(buf)
   }
 
@@ -340,4 +427,22 @@ function noop () {}
 
 function noopPromise (p) {
   if (p && p.then) p.then(noop, noop)
+}
+
+
+
+
+
+
+const id = Math.random().toString(16).slice(2)
+
+
+
+
+function toBinaryString (buf) {
+  let result = []
+  for (let b of buf) {
+    result.push(b.toString(2).padStart(8, '0'))
+  }
+  return result.join(' ')
 }
