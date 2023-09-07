@@ -40,7 +40,9 @@ class NBDProtocol {
   constructor (stream, handlers, verbose) {
 
     this.verbose = verbose
-    this.logStream = fs.createWriteStream(`./hbdLogs_${Math.random().toString(16).slice(2)}.txt`, { flags: 'a' })
+    const date = new Date()
+    const timeString = date.toTimeString().slice(0, 8).replaceAll(':', '_')
+    this.logStream = fs.createWriteStream(`./hbdLogs_${timeString}.txt`, { flags: 'a' })
 
     this.stream = stream
     this.blockSize = handlers.blockSize || DEFAULT_BLOCK_SIZE
